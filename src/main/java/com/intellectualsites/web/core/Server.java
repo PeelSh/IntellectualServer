@@ -58,7 +58,7 @@ public class Server {
     private boolean ipv4;
     private boolean mysqlEnabled;
     private String mysqlHost;
-    private String mysqlPort;
+    private Integer mysqlPort;
     private String mysqlUser;
     private String mysqlPass;
     private String mysqlDB;
@@ -67,6 +67,7 @@ public class Server {
     private Map<String, Class<? extends View>> viewBindings;
     private EventCaller eventCaller;
     private PluginManager pluginManager;
+    private MySQLConnManager mysqlConnManager;
 
     {
         viewBindings = new HashMap<>();
@@ -165,6 +166,8 @@ public class Server {
 
         this.viewManager = new ViewManager();
         this.sessionManager = new SessionManager(this);
+
+        this.mysqlConnManager = new MySQLConnManager(mysqlHost, mysqlPort, mysqlDB, mysqlUser, mysqlPass);
 
         try {
             configViews = new YamlConfiguration("views", new File(new File(coreFolder, "config"), "views.yml"));
@@ -310,6 +313,9 @@ public class Server {
             EventManager.getInstance().bake();
         }
         handleEvent(new StartupEvent(this));
+        // Start the MySQL connection manager.
+        if (mysqlEnabled)
+            mysqlConnManager.init();
         // Let's make sure the views are valid
         // (Has the right constructor)
         validateViews();
