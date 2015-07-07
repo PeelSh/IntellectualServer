@@ -56,6 +56,12 @@ public class Server {
     private SessionManager sessionManager;
     private String hostName;
     private boolean ipv4;
+    private boolean mysqlEnabled;
+    private String mysqlHost;
+    private String mysqlPort;
+    private String mysqlUser;
+    private String mysqlPass;
+    private String mysqlDB;
     private int bufferIn, bufferOut;
     private ConfigurationFile configViews;
     private Map<String, Class<? extends View>> viewBindings;
@@ -131,6 +137,12 @@ public class Server {
             configServer.setIfNotExists("buffer.in", 1024 * 1024); // 16 mb
             configServer.setIfNotExists("buffer.out", 1024 * 1024);
             configServer.setIfNotExists("ipv4", false);
+            configServer.setIfNotExists("mysql-enabled", false);
+            configServer.setIfNotExists("mysql-host", "localhost");
+            configServer.setIfNotExists("mysql-port", "3306");
+            configServer.setIfNotExists("mysql-db", "database");
+            configServer.setIfNotExists("mysql-user", "changeme");
+            configServer.setIfNotExists("mysql-pass", "password");
             configServer.saveFile();
         } catch (final Exception e) {
             throw new RuntimeException("Couldn't load in the config file...", e);
@@ -141,6 +153,12 @@ public class Server {
         this.bufferIn = configServer.get("buffer.in");
         this.bufferOut = configServer.get("buffer.out");
         this.ipv4 = configServer.get("ipv4");
+        this.mysqlEnabled = configServer.get("mysql-enabled");
+        this.mysqlHost = configServer.get("mysql-host");
+        this.mysqlPort = configServer.get("mysql-port");
+        this.mysqlDB = configServer.get("mysql-db");
+        this.mysqlUser = configServer.get("mysql-user");
+        this.mysqlPass = configServer.get("mysql-pass");
 
         this.started = false;
         this.stopping = false;
